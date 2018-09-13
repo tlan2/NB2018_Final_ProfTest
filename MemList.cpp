@@ -90,42 +90,46 @@ MemList::MemList(unsigned int s_addr, unsigned int block_size)
 //
 MemBlock * MemList::reserveMemBlock(unsigned int block_size)
 {
-    // To be implemented   
+    // To be implemented
+       
     MemBlock * temp = new MemBlock;
     
-    //Case 1: Reserve Block is empty
-    if (reserved_head == NULL)
+    if (block_size > free_head->getSize())
+         { return NULL;}
+    else
     {
-        free_head->setAddr(block_size);
-        free_head->setSize((free_head->getSize()) - block_size);
+        //Case 1: Reserve Block is empty
+        if (reserved_head == NULL)
+        {
+            free_head->setAddr(block_size);
+            free_head->setSize((free_head->getSize()) - block_size);
    
-        temp->setAddr(0);
-        temp->setSize(block_size);
-        temp->setNext(NULL);
-        reserved_head = temp;
-    }
+            temp->setAddr(0);
+            temp->setSize(block_size);
+            temp->setNext(NULL);
+            reserved_head = temp;
+        }
 
     //Case 2: Add New Reserve block 
-    else 
-    {   //Reserve Section
-        MemBlock * current = reserved_head;
-        while(current->getNext() != NULL && (current->getNext()->getAddr()) > current->getAddr())
-        {
-          current = current->getNext(); 
-          temp->setNext(current->getNext());
-          temp->setAddr(current->getSize());
-          temp->setSize(block_size);
-        }
-        temp->setNext(NULL);
-        current->setNext(temp);
+        else 
+        {   //Reserve Section
+             MemBlock * current = reserved_head;
+            while(current->getNext() != NULL && (current->getNext()->getAddr()) > current->getAddr())
+            {
+                temp->setAddr(current->getSize());
+                temp->setSize(block_size);
+                current = current->getNext(); 
+            }
+            temp->setNext(NULL);
+            current->setNext(temp);
 
-        //Free Section
-        free_head->setAddr((free_head->getAddr()) + block_size);
-        free_head->setSize((free_head->getSize()) - block_size);
-    }
+            //Free Section
+            free_head->setAddr((free_head->getAddr()) + block_size);
+            free_head->setSize((free_head->getSize()) - block_size);
+        }
     
  
-    return NULL;
+    return temp;
 }
 
 
